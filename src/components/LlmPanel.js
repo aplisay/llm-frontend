@@ -35,13 +35,12 @@ export default function LlmPanel() {
   const buttonClick = async () => {
     if (state === 'initial' && !agent?.id) {
       setState('trying');
-      let res = await createAgent({ agentName, prompt });
+      let res = await createAgent({ agentName, prompt: prompt.value });
       setAgent(res);
       setState('active');
     }
     else if (state === 'active' && agent?.id) {
-      let res = await updateAgent({ agentName, prompt });
-      setAgent(res);
+      let res = await updateAgent({ id: agent.id, prompt: prompt.value });
     }
   };
 
@@ -55,8 +54,9 @@ export default function LlmPanel() {
   };
  
 
-  const promptChange = (value) => {
-    setPrompt({ value, changed: true });
+  const promptChange = async (evt) => {
+    console.log({evt, prompt}, 'promptChange')
+    setPrompt({ value: evt.target.value, changed: true });
   }
 
   return (
@@ -73,7 +73,7 @@ export default function LlmPanel() {
       </Grid>
       <Grid xs={12}>
         <Item>
-          <Textarea placeholder="prpmpt" value={prompt.value} name="prompt" onChange="promptChange" />
+          <Textarea placeholder="Enter prompt here" value={prompt.value} name="prompt" onChange={promptChange} />
         </Item>
       </Grid>
 
