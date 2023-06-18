@@ -12,18 +12,22 @@ const api = axios.create({
 
 
 export async function createAgent({ agentName, prompt, options }) {
-  return await api.post('/agents', { agentName, prompt, options });
+  let { data } = await api.post('/agents', { agentName, prompt, options });
+  return data;
 }
 
 export async function listAgents() {
-  return await api.get('/agents');
+  let { data } = await api.get('/agents');
+  return data;
 
 }
 
 export async function updateAgent({ id, prompt }) {
-  return await api.put(`/agents/${ id }`, { prompt });
+  let { data } = await api.put(`/agents/${id}`, { prompt });
+  return data;
 }
 
 export async function deleteAgent({ id }) {
-  return await api.delete(`/agents/${id}`);
+  let { data } = await api.delete(`/agents/${id}`);
+  return data
 }

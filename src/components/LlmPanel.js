@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { styled } from '@mui/joy/styles';
-import { Button, Grid, Link, Sheet, Textarea, Typography } from '@mui/joy';
+import { Button, CircularProgress, Grid, Link, Sheet, Textarea, Typography } from '@mui/joy';
 import { createAgent, listAgents, updateAgent, deleteAgent } from '../lib/agent';
 import SelectAgent from './SelectAgent';
 
@@ -19,22 +19,45 @@ export default function LlmPanel() {
   let [agentName, setAgentName] = useState();
   let [state, setState] = useState('initial');
   let [agents, setAgents] = useState([]);
+  let [prompt, setPrompt] = useState({});
   
-  
-  listAgents().then(a => (setAgents(a)));
+  useEffect(() => {
+    listAgents().then(a => (setAgents(Object.fromEntries(a))));
+  }, []);
 
-
-  const buttonClick = () => {
-    if (state === 'initial' && agent.state !== 'connected') {
-      
+  useEffect(() => {
+    console.log({ agentName, prompt, expr: !prompt?.changed, an: `${agentName}`, def: agents[agentName]?.defaultPrompt }, 'useEffect');
+    if(!prompt?.changed) {
+      setPrompt({...prompt, value: agents[agentName]?.defaultPrompt})
     }
+  }, [agentName]);
+  
+  const buttonClick = async () => {
+    if (state === 'initial' && !agent?.id) {
+      setState('trying');
+      let res = await createAgent({ agentName, prompt });
+      setAgent(res);
+      setState('active');
+    }
+    else if (state === 'active' && agent?.id) {
+      let res = await updateAgent({ agentName, prompt });
+      setAgent(res);
+    }
+  };
 
-  } 
+  const disconnectClick = async () => {
+    if (state === 'active' && agent?.id) {
+      setState('trying');
+      let res = await deleteAgent({ id: agent.id });
+      setAgent(null);
+      setState('initial');
+    }
+  };
+ 
 
-
-
-
-
+  const promptChange = (value) => {
+    setPrompt({ value, changed: true });
+  }
 
   return (
 
@@ -43,35 +66,53 @@ export default function LlmPanel() {
       <Grid xs={12}>
         <Item>
           <Typography sx={{ mt: 6, mb: 3 }} color="text.secondary">
-                Pro tip: See more <Link href="https://mui.com/getting-started/templates/">templates</Link> in
-            the MUI documentation.
+            LLM Voice playground
           </Typography>
         </Item>
 
       </Grid>
       <Grid xs={12}>
         <Item>
-          <Textarea placeholder="prpmpt" />
+          <Textarea placeholder="prpmpt" value={prompt.value} name="prompt" onChange="promptChange" />
         </Item>
       </Grid>
+
       <Grid xs={12} sm={4}>
         <Item>
-          <SelectAgent options={agents} {...{agentName, setAgentName}}/>
-          <Button onClick={buttonClick} enabled={state === 'initial'}>{agent.started ? 'Update Agent' : 'Create Agent'}</Button>
-          <Typography sx={{ mt: 6, mb: 3 }} color="text.secondary">
-            {agent.number && `${agent}.number connected`}
-          </Typography>
+          <SelectAgent disabled={state !== 'initial'} options={agents} {...{ agentName, setAgentName }} />
+       
         </Item>
       </Grid>
       <Grid xs={12} sm={8}>
+        <Item>
+          <Typography color="text.secondary">
+            {agent?.number ? `+${agent.number} connected` : 'Agent not created yet'}
+          </Typography>
+        </Item>
         <Item>
           <Sheet variant="outlined" color="neutral" sx={{ p: 4 }}>
             Hello world!
           </Sheet>
         </Item>
+
       </Grid>
+      <Grid xs={6}>
+        <Item>
+          <Button disabled={state === 'trying'}  onClick={buttonClick} >
+            {state === 'trying' && <CircularProgress thickness={2} />}
+            {state === 'active' && 'Update Agent'}
+            {state === 'initial' && 'Create Agent'}
+          </Button>
+        </Item>
       </Grid>
 
-
-      );
+      {state === 'active' &&
+        <Grid xs={6}>
+          <Item>
+            <Button color="danger" onClick={disconnectClick}>Disconnect Agent</Button>
+          </Item>
+        </Grid>
+      }
+    </Grid>
+  );
 };
