@@ -3,6 +3,7 @@ import { styled } from '@mui/joy/styles';
 import { Button, CircularProgress, Grid, Link, Sheet, Textarea, Typography } from '@mui/joy';
 import { createAgent, listAgents, updateAgent, deleteAgent } from '../lib/agent';
 import SelectAgent from './SelectAgent';
+import Transcript from './Transcript';
 
 const Item = styled(Sheet)(({ theme }) => ({
   backgroundColor:
@@ -20,6 +21,7 @@ export default function LlmPanel() {
   let [state, setState] = useState('initial');
   let [agents, setAgents] = useState([]);
   let [prompt, setPrompt] = useState({});
+  let [transcript, setTranscript] = useState([]);
   
   useEffect(() => {
     listAgents().then(a => (setAgents(Object.fromEntries(a))));
@@ -31,13 +33,20 @@ export default function LlmPanel() {
       setPrompt({...prompt, value: agents[agentName]?.defaultPrompt})
     }
   }, [agentName]);
+
+  const onMessage = (message) => {
+    console.log({ message }, 'got message');
+    if (message.prompt || message.completion)
+      setTranscript((t) => ([...t, message]));
+  }
   
   const buttonClick = async () => {
     if (state === 'initial' && !agent?.id) {
       setState('trying');
-      let res = await createAgent({ agentName, prompt: prompt.value });
+      let res = await createAgent({ agentName, prompt: prompt.value, onMessage });
       setAgent(res);
       setState('active');
+      setTranscript([]);
     }
     else if (state === 'active' && agent?.id) {
       let res = await updateAgent({ id: agent.id, prompt: prompt.value });
@@ -61,7 +70,7 @@ export default function LlmPanel() {
 
   return (
 
-    <Grid container spacing={2} sx={{ flexGrow: 1 }}>
+    <Grid container spacing={2} sx={{ flexGrow: 1, width: '100%'}}>
 
       <Grid xs={12}>
         <Item>
@@ -71,48 +80,54 @@ export default function LlmPanel() {
         </Item>
 
       </Grid>
-      <Grid xs={12}>
+      <Grid xs={12} sm={6}>
+        <Item>
+          <SelectAgent disabled={state !== 'initial'} options={agents} {...{ agentName, setAgentName }} />
+        </Item>
+      </Grid>
+      <Grid xs={12} sm={6}>
+        <Item>
+          <Typography color="text.primary">
+            {agent?.number ? `+${agent.number} connected` : 'Agent not created yet'}
+          </Typography>
+        </Item>
+        {state === 'active' &&
+          <Item>
+            <Button sx={{ mt: 6, mb: 3 }} color="danger" onClick={disconnectClick}>Disconnect Agent</Button>
+          </Item>
+        }
+        </Grid>
+
+      <Grid xs={12} sm={6}>
         <Item>
           <Textarea placeholder="Enter prompt here" value={prompt.value} name="prompt" onChange={promptChange} />
         </Item>
       </Grid>
+      <Grid xs={12} sm={6}>
 
-      <Grid xs={12} sm={4}>
         <Item>
-          <SelectAgent disabled={state !== 'initial'} options={agents} {...{ agentName, setAgentName }} />
-       
+          <Transcript transcript={transcript} />
         </Item>
       </Grid>
-      <Grid xs={12} sm={8}>
+      <Grid xs={12} sm={6}>
         <Item>
-          <Typography color="text.secondary">
-            {agent?.number ? `+${agent.number} connected` : 'Agent not created yet'}
+          <Typography sx={{ mt: 6, mb: 3 }} color="text.secondary">
+            Options here
           </Typography>
         </Item>
-        <Item>
-          <Sheet variant="outlined" color="neutral" sx={{ p: 4 }}>
-            Hello world!
-          </Sheet>
-        </Item>
-
       </Grid>
       <Grid xs={6}>
         <Item>
-          <Button disabled={state === 'trying'}  onClick={buttonClick} >
+          <Button sx={{ mt: 6, mb: 3 }}  disabled={state === 'trying'}  onClick={buttonClick} >
             {state === 'trying' && <CircularProgress thickness={2} />}
             {state === 'active' && 'Update Agent'}
             {state === 'initial' && 'Create Agent'}
           </Button>
-        </Item>
+          </Item>
+        
       </Grid>
 
-      {state === 'active' &&
-        <Grid xs={6}>
-          <Item>
-            <Button color="danger" onClick={disconnectClick}>Disconnect Agent</Button>
-          </Item>
-        </Grid>
-      }
+      
     </Grid>
   );
 };

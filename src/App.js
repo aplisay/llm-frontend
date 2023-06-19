@@ -8,7 +8,7 @@ import LlmPanel from './components/LlmPanel.js';
 
 export default function App() {
   return (
-    <Container maxWidth="sm">
+    <Container>
       <LlmPanel />
     </Container>
   );
