@@ -50,8 +50,8 @@ export async function listAgents() {
 
 }
 
-export async function updateAgent({ id, prompt }) {
-  let { data } = await api.put(`/agents/${id}`, { prompt });
+export async function updateAgent({ id, prompt, options }) {
+  let { data } = await api.put(`/agents/${id}`, { prompt, options });
   return data;
 }
 

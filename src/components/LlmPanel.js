@@ -4,6 +4,7 @@ import { Button, CircularProgress, Grid, Link, Sheet, Textarea, Typography } fro
 import { createAgent, listAgents, updateAgent, deleteAgent } from '../lib/agent';
 import SelectAgent from './SelectAgent';
 import Transcript from './Transcript';
+import TemperatureSlider from './TemperatureSlider';
 
 const Item = styled(Sheet)(({ theme }) => ({
   backgroundColor:
@@ -22,6 +23,7 @@ export default function LlmPanel() {
   let [agents, setAgents] = useState([]);
   let [prompt, setPrompt] = useState({});
   let [transcript, setTranscript] = useState([]);
+  let [temperature, setTemperature] = useState(0.2);
   
   useEffect(() => {
     listAgents().then(a => (setAgents(Object.fromEntries(a))));
@@ -43,13 +45,13 @@ export default function LlmPanel() {
   const buttonClick = async () => {
     if (state === 'initial' && !agent?.id) {
       setState('trying');
-      let res = await createAgent({ agentName, prompt: prompt.value, onMessage });
+      let res = await createAgent({ agentName, prompt: prompt.value, options: { temperature }, onMessage });
       setAgent(res);
       setState('active');
       setTranscript([]);
     }
     else if (state === 'active' && agent?.id) {
-      let res = await updateAgent({ id: agent.id, prompt: prompt.value });
+      let res = await updateAgent({ id: agent.id, prompt: prompt.value, options: { temperature } });
     }
   };
 
@@ -111,9 +113,7 @@ export default function LlmPanel() {
       </Grid>
       <Grid xs={12} sm={6}>
         <Item>
-          <Typography sx={{ mt: 6, mb: 3 }} color="text.secondary">
-            Options here
-          </Typography>
+          <TemperatureSlider value={temperature} setValue={setTemperature}  />
         </Item>
       </Grid>
       <Grid xs={6}>
