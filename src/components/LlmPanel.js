@@ -37,7 +37,7 @@ export default function LlmPanel() {
 
   const onMessage = (message) => {
     console.log({ message }, 'got message');
-    if (message.prompt || message.completion)
+    if (message.prompt || message.completion || message.call || message.data || message.hangup )
       setTranscript((t) => ([...t, message]));
   };
 
