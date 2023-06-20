@@ -18,10 +18,8 @@ export async function createAgent({ agentName, prompt, options, onClose, onMessa
   let { data } = await api.post('/agents', { agentName, prompt, options });
   if (data?.socket) {
     let wsPath = `${backend.protocol === 'https:' ? 'wss:' : 'ws:'}//${backend.host}${data?.socket}`;
-    console.log({ data, wsPath, backend }, 'got socket');
     let ws = new WebSocket(wsPath);
     ws.addEventListener('message', (message) => {
-      console.log({ message }, 'WS message');
       try {
         data = JSON.parse(message.data);
         onMessage && onMessage(data);
@@ -35,6 +33,7 @@ export async function createAgent({ agentName, prompt, options, onClose, onMessa
     });
     ws.addEventListener('close', (err) => {
       console.log({ err }, 'WS close');
+      onClose && onClose();
     });
 
   }

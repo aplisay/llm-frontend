@@ -24,15 +24,14 @@ export default function LlmPanel() {
   let [prompt, setPrompt] = useState({});
   let [transcript, setTranscript] = useState([]);
   let [temperature, setTemperature] = useState(0.2);
-  
+
   useEffect(() => {
     listAgents().then(a => (setAgents(Object.fromEntries(a))));
   }, []);
 
   useEffect(() => {
-    console.log({ agentName, prompt, expr: !prompt?.changed, an: `${agentName}`, def: agents[agentName]?.defaultPrompt }, 'useEffect');
-    if(!prompt?.changed) {
-      setPrompt({...prompt, value: agents[agentName]?.defaultPrompt})
+    if (!prompt?.changed) {
+      setPrompt({ ...prompt, value: agents[agentName]?.defaultPrompt });
     }
   }, [agentName]);
 
@@ -40,8 +39,8 @@ export default function LlmPanel() {
     console.log({ message }, 'got message');
     if (message.prompt || message.completion)
       setTranscript((t) => ([...t, message]));
-  }
-  
+  };
+
   const buttonClick = async () => {
     if (state === 'initial' && !agent?.id) {
       setState('trying');
@@ -63,42 +62,57 @@ export default function LlmPanel() {
       setState('initial');
     }
   };
- 
+
 
   const promptChange = async (evt) => {
-    console.log({evt, prompt}, 'promptChange')
+
     setPrompt({ value: evt.target.value, changed: true });
-  }
+  };
 
   return (
 
-    <Grid container spacing={2} sx={{ flexGrow: 1, width: '100%'}}>
+    <Grid container spacing={2} sx={{ flexGrow: 1, width: '100%' }}>
 
       <Grid xs={12}>
         <Item>
-          <Typography sx={{ mt: 6, mb: 3 }} color="text.secondary">
-            LLM Voice playground
+          <Typography sx={{ mt: 6, mb: 3 }}>
+            LLM Voice playground&nbsp;
+            {agent?.number ? (<Typography color="danger">
+              {`agent live on +${agent.number}`}
+            </Typography>) :
+              (<Typography color="text.secondary">
+                (agent not created yet)
+              </Typography>)}
           </Typography>
+
         </Item>
 
       </Grid>
       <Grid xs={12} sm={6}>
         <Item>
-          <SelectAgent disabled={state !== 'initial'} options={agents} {...{ agentName, setAgentName }} />
+          <SelectAgent disabled={state !== 'initial'} options={agents} {...{ agentName, setAgentName }} placeholder="Select model" />
+        </Item>
+          <Item>
+            <TemperatureSlider value={temperature} setValue={setTemperature} />
+          </Item>
+    
+      </Grid>
+      <Grid xs={6} sm={3}>
+        <Item>
+          <Button sx={{ mt: 6, mb: 3 }} disabled={state === 'trying'} onClick={buttonClick} >
+            {state === 'trying' && <CircularProgress thickness={2} />}
+            {state === 'active' && 'Update Agent'}
+            {state === 'initial' && 'Create Agent'}
+          </Button>
         </Item>
       </Grid>
-      <Grid xs={12} sm={6}>
+      <Grid xs={6} sm={3}>
         <Item>
-          <Typography color="text.primary">
-            {agent?.number ? `+${agent.number} connected` : 'Agent not created yet'}
-          </Typography>
+          {state === 'active' && <Button disabled={state !== 'active'} sx={{ mt: 6, mb: 3 }} color="danger" onClick={disconnectClick}>Disconnect Agent</Button>}
         </Item>
-        {state === 'active' &&
-          <Item>
-            <Button sx={{ mt: 6, mb: 3 }} color="danger" onClick={disconnectClick}>Disconnect Agent</Button>
-          </Item>
-        }
-        </Grid>
+      </Grid>
+
+
 
       <Grid xs={12} sm={6}>
         <Item>
@@ -111,23 +125,10 @@ export default function LlmPanel() {
           <Transcript transcript={transcript} />
         </Item>
       </Grid>
-      <Grid xs={12} sm={6}>
-        <Item>
-          <TemperatureSlider value={temperature} setValue={setTemperature}  />
-        </Item>
-      </Grid>
-      <Grid xs={6}>
-        <Item>
-          <Button sx={{ mt: 6, mb: 3 }}  disabled={state === 'trying'}  onClick={buttonClick} >
-            {state === 'trying' && <CircularProgress thickness={2} />}
-            {state === 'active' && 'Update Agent'}
-            {state === 'initial' && 'Create Agent'}
-          </Button>
-          </Item>
-        
-      </Grid>
 
-      
+
+
+
     </Grid>
   );
 };

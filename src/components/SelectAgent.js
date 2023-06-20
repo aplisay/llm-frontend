@@ -6,8 +6,6 @@ import Option from '@mui/joy/Option';
 
 export default function SelectAgent({options, agentName, setAgentName, ...rest}) {
 
-  console.log({ options });
-
   return (
     <Select defaultValue={agentName} onChange={(e, value) => setAgentName(value)} sx={{mb:2}} {...{...rest}}>
       {Object.entries(options).map(option => (
