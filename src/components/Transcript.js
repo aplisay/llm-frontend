@@ -4,9 +4,6 @@ import { Box,  Sheet, } from '@mui/joy';
 
 
 export default function Transcript({transcript}) {
-
-  console.log({ transcript });
-
   return (
     <Sheet variant="outlined" color="neutral" sx={{ p: 4, width: '100%' }}>
       {transcript.map((utter, index) => (<>
