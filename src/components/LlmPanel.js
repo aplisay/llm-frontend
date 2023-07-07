@@ -70,6 +70,7 @@ export default function LlmPanel() {
   };
 
   return (
+    <>
 
     <Grid container spacing={2} sx={{ flexGrow: 1, width: '100%' }}>
 
@@ -129,6 +130,8 @@ export default function LlmPanel() {
 
 
 
-    </Grid>
+      </Grid>
+        
+      </>
   );
 };
