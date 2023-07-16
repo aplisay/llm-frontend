@@ -6,6 +6,9 @@ import SelectAgent from './SelectAgent';
 import Transcript from './Transcript';
 import TemperatureSlider from './TemperatureSlider';
 import ErrorAlert from './ErrorAlert';
+import PromptInput from './PromptInput';
+import AgentButton from './AgentButton';
+import PhoneNumber from './PhoneNumber';
 
 const Item = styled(Sheet)(({ theme }) => ({
   backgroundColor:
@@ -43,11 +46,6 @@ export default function LlmPanel() {
     tryFetch();
   }, []);
 
-  useEffect(() => {
-    if (!prompt?.changed) {
-      setPrompt({ ...prompt, value: agents[agentName]?.defaultPrompt });
-    }
-  }, [agentName]);
 
   useEffect(() => {
     if (!ws && state === 'active') {
@@ -97,11 +95,6 @@ export default function LlmPanel() {
   };
 
 
-  const promptChange = async (evt) => {
-
-    setPrompt({ value: evt.target.value, changed: true });
-  };
-
   return (
     <>
 
@@ -110,18 +103,13 @@ export default function LlmPanel() {
           <Item>
             <Typography sx={{ mt: 6, mb: 3 }}>
               LLM Voice playground&nbsp;
-              {agent?.number ? (<Typography color="danger">
-                {`agent live on +${agent.number}`}
-              </Typography>) :
-                (<Typography color="text.secondary">
-                  (agent not created yet)
-                </Typography>)}
+              <PhoneNumber number={agent?.number} tooltip={state === 'active' && !transcript.length  && 'Step4: call the number'} />
             </Typography>
           </Item>
         </Grid>
         <Grid xs={12} sm={6}>
           <Item>
-            <SelectAgent disabled={state !== 'initial'} options={agents} {...{ agentName, setAgentName }} placeholder="Select model" />
+            <SelectAgent disabled={state !== 'initial'} options={agents} {...{ agentName, setAgentName }} placeholder="Select model" tooltip={ !agentName && 'Step1: select model'} />
           </Item>
           <Item>
             <TemperatureSlider value={temperature} setValue={setTemperature} />
@@ -129,11 +117,7 @@ export default function LlmPanel() {
         </Grid>
         <Grid xs={6} sm={3}>
           <Item>
-            <Button sx={{ mt: 6, mb: 3 }} disabled={state === 'trying' || !agentName} onClick={buttonClick} >
-              {state === 'trying' && <CircularProgress thickness={2} />}
-              {state === 'active' && 'Update Agent'}
-              {state === 'initial' && 'Create Agent'}
-            </Button>
+            <AgentButton sx={{ mt: 6, mb: 3 }} disabled={state === 'trying' || !agentName} onClick={buttonClick} state={state} tooltip={agentName && prompt.changed && state === 'initial' && 'Step3: create agent'} />
           </Item>
         </Grid>
         <Grid xs={6} sm={3}>
@@ -141,12 +125,9 @@ export default function LlmPanel() {
             {state === 'active' && <Button disabled={state !== 'active'} sx={{ mt: 6, mb: 3 }} color="danger" onClick={disconnect}>Disconnect Agent</Button>}
           </Item>
         </Grid>
-
-
-
         <Grid xs={12} sm={6}>
           <Item>
-            <Textarea placeholder="Enter prompt here" value={prompt.value} name="prompt" onChange={promptChange} />
+            <PromptInput prompt={prompt} setPrompt={setPrompt} agentName={agentName} agents={agents} tooltip={agentName && !prompt.changed && 'Step2: write/customise your prompt'} />
           </Item>
         </Grid>
         <Grid xs={12} sm={6}>
