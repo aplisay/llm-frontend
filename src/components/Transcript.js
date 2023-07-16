@@ -8,7 +8,7 @@ export default function Transcript({ transcript }) {
   return (
     <Sheet variant="outlined" color="neutral" sx={{ p: 4, width: '100%' }}>
       {transcript.map((utter, index) => (<>
-        {utter.completion &&
+        {(utter.completion || utter.goodbye) &&
           <Box key={index}
             sx={{
               display: 'flex',
@@ -31,7 +31,7 @@ export default function Transcript({ transcript }) {
                 fontSize: '0.875rem',
                 fontWeight: '700',
               }}
-            >{utter.completion}</Box>
+            >{utter.completion || utter.goodbye}</Box>
 
           </Box>
         }

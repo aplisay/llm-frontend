@@ -60,7 +60,7 @@ export default function LlmPanel() {
 
   const onMessage = (message) => {
     console.log({ message, state }, 'got message');
-    if (message.prompt || message.completion || message.call || message.data || message.hangup)
+    if (message.prompt || message.completion || message.goodbye || message.call || message.data || message.hangup)
       setTranscript((t) => ([...t, message]));
   };
 
@@ -69,6 +69,7 @@ export default function LlmPanel() {
       setState('trying');
       try {
         let res = await createAgent({ agentName, prompt: prompt.value, options: { temperature }, onMessage, onClose: () => setWs(null) });
+        console.log({ res }, 'got agent');
         setWs(res.ws);
         setAgent(res);
         setState('active');
