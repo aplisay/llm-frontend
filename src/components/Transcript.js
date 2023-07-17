@@ -10,24 +10,31 @@ import PhoneNumber from './PhoneNumber';
 const types = {
   goodbye: {
     flexDirection: 'row',
-    color: 'warning'
+    color: 'warning',
+    maxWidth: '85%'
   },
   completion: {
     flexDirection: 'row',
-    color: 'primary'
+    color: 'primary',
+    maxWidth: '85%'
   },
   prompt: {
     flexDirection: 'row-reverse',
-    color: 'neutral'
+    color: 'neutral',
+    maxWidth: '85%'
   },
   call: {
     startDecorator: (<Call />),
     flexDirection: 'row-reverse',
+    flexGrow: 1,
+    align: 'center',
     color: 'success'
   },
   hangup: {
     startDecorator: (<CallEnd />),
     flexDirection: 'row-reverse',
+    flexGrow: 1,
+    align: 'center',
     color: 'danger'
   },
   data: {
@@ -40,7 +47,7 @@ const types = {
 const Bubble = ({ type, key, children }) => {
   console.log({ type, key, children }, 'Bubble');
 
-  let { flexDirection, color, startDecorator } = types[type] || types['completion'];
+  let { align, flexDirection, flexGrow, color, maxWidth, startDecorator } = types[type] || types['completion'];
 
   return <Box key={key}
 
@@ -48,7 +55,7 @@ const Bubble = ({ type, key, children }) => {
       display: 'flex',
       flexDirection,
       bgcolor: 'background.paper',
-      borderRadius: 3,
+      borderRadius: 3
     }}
   >
     <Sheet
@@ -58,10 +65,12 @@ const Bubble = ({ type, key, children }) => {
         p: 1,
         m: 1,
         mr: 3,
+        flexGrow,
+        maxWidth,
         borderRadius: 10,
       }}
     >
-      <Typography {...{ startDecorator }} level="body2" align="left">{children}</Typography>  
+      <Typography {...{ startDecorator }} level="body2" justifyContent={align} align="left">{children}</Typography>  
     </Sheet>
 
   </Box>;
@@ -86,7 +95,7 @@ export default function Transcript({ transcript, number, tooltip }) {
         Object.entries(utter).map(([type, value]) =>
           <Bubble type={type} key={index}>
             {(type === 'completion' || type === 'goodbye' || type === 'prompt') && value}
-            {type === 'call' && `Call from REDACTED`}
+            {type === 'call' && `Call from ${value}`}
             {type === 'hangup' && 'Call HANGUP'}
             {type === 'data' && <code>{JSON.stringify(value, null, "  ")}</code>}
           </Bubble>
