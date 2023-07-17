@@ -44,7 +44,6 @@ export async function createAgent({ agentName, prompt, options, onClose, onMessa
 export async function listAgents() {
   let { data } = await api.get('/agents');
   return data;
-
 }
 
 export async function updateAgent({ id, prompt, options }) {
@@ -61,4 +60,9 @@ export async function deleteAgent({ id }) {
     // we may be trying to delete an agent because of a failed network, don't care too much
     console.log({ e }, 'destroying agent');
   }
+}
+
+export async function listVoices() {
+  let { data } = await api.get('/voices');
+  return data;
 }

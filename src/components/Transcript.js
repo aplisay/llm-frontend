@@ -82,16 +82,19 @@ const Bubble = ({ type, key, children }) => {
 export default function Transcript({ transcript, number, tooltip }) {
   const listRef = useRef(null);
 
+  console.log({ transcript, number, tooltip }, 'transcript render')
+
   useEffect(() => {
-    console.log({ listRef }, 'scrollefgfect');
-    listRef.current?.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+   listRef.current?.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, [transcript]);
+
+
 
   return (
     <Sheet variant="outlined" sx={{ p: 4, width: '100%', borderRadius: 5 }} ref={listRef}>
       <Typography level="h6" align="left"><PhoneNumber number={number} tooltip={tooltip} />
       </Typography>
-      {transcript.map((utter, index) =>
+      {transcript && transcript.map((utter, index) =>
         Object.entries(utter).map(([type, value]) =>
           <Bubble type={type} key={index}>
             {(type === 'completion' || type === 'goodbye' || type === 'prompt') && value}
@@ -101,7 +104,7 @@ export default function Transcript({ transcript, number, tooltip }) {
           </Bubble>
         )
       )}
-      {!!transcript.length && transcript[transcript.length - 1].completion &&
+      {!!transcript && !!transcript.length && transcript[transcript.length - 1].completion &&
         <Bubble type="prompt" key="last">
           ...
         </Bubble>
