@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { styled } from '@mui/joy/styles';
-import { Button, CircularProgress, Grid, Link, Sheet, Textarea, Typography } from '@mui/joy';
+import { Button, Grid, Sheet, Typography } from '@mui/joy';
 import { createAgent, listAgents, updateAgent, deleteAgent } from '../lib/agent';
 import SelectAgent from './SelectAgent';
 import Transcript from './Transcript';
@@ -129,8 +129,7 @@ export default function LlmPanel() {
         <Grid xs={12}>
           <Item>
             <Typography sx={{ mt: 6, mb: 3 }}>
-              LLM Voice playground&nbsp;
-              <PhoneNumber number={agent?.number} tooltip={tooltip.phoneNumber} />
+              LLM Voice playground
             </Typography>
           </Item>
         </Grid>
@@ -148,21 +147,25 @@ export default function LlmPanel() {
             <TemperatureSlider value={temperature} setValue={setTemperature} />
           </Item>
         </Grid>
-        <Grid xs={6} sm={3}>
-          <Item>
-            <AgentButton
-              sx={{ mt: 6, mb: 3 }}
-              disabled={state === 'trying' || !agentName
-                || (state === 'active' && !prompt.changedSinceCreate)
-              }
-              onClick={buttonClick} state={state}
-              tooltip={tooltip.agentButton} />
-          </Item>
-        </Grid>
-        <Grid xs={6} sm={3}>
-          <Item>
-            {state === 'active' && <Button disabled={state !== 'active'} sx={{ mt: 6, mb: 3 }} color="danger" onClick={disconnect}>Disconnect Agent</Button>}
-          </Item>
+        <Grid container xs={12} sm={6}>
+
+          <Grid xs={12} md={6}>
+            <Item>
+              <AgentButton
+                disabled={state === 'trying' || !agentName
+                  || (state === 'active' && !prompt.changedSinceCreate)
+                }
+                onClick={buttonClick} state={state}
+                tooltip={tooltip.agentButton}
+                sx={{ width: '100%' }}
+              />
+            </Item>
+          </Grid>
+          <Grid xs={12} md={6}>
+            <Item>
+              {state === 'active' && <Button disabled={state !== 'active'} color="danger" onClick={disconnect} sx={{ width: '100%' }}>Disconnect Agent</Button>}
+            </Item>
+          </Grid>
         </Grid>
         <Grid xs={12} sm={6}>
           <Item>
@@ -172,7 +175,7 @@ export default function LlmPanel() {
         <Grid xs={12} sm={6}>
 
           <Item>
-            <Transcript transcript={transcript} />
+            <Transcript transcript={transcript} number={agent?.number} tooltip={tooltip.phoneNumber} />
           </Item>
         </Grid>
 

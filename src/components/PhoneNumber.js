@@ -1,20 +1,23 @@
 import React from 'react';
 import Tooltip from '@mui/joy/Tooltip';
 import Typography from '@mui/joy/Typography';
+import { Call } from '@mui/icons-material';
 
 
 export default function PhoneNumber({ tooltip, number }) {
-  return number ? (
-    <Tooltip title={tooltip} arrow placement="right" open={!!tooltip} >
-      <Typography color="danger" >
-        {`agent live on +${number}`}
-      </Typography>
-    </Tooltip>
-  )
-    :
-    (<Typography color="text.secondary">
-      (agent not created yet)
-    </Typography>);
+  return (
+    <Typography>
+      {number &&
+        <>Agent live on&nbsp;
+          <Tooltip title={tooltip} arrow placement="right" open={!!tooltip} >
+            <Typography color="success" startDecorator={(<Call />)}>+{number}</Typography>
+          </Tooltip>
+        </>}
+      {!number && (<>Agent not active</>)}
+    </Typography>
+
+  );
+
 
 
 };

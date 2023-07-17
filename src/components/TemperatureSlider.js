@@ -9,7 +9,7 @@ function valueText(value) {
 
 export default function TemperatureSlider({ value, setValue }) {
   return (
-    <Box sx={{ width: 300 }}>
+    <Box sx={{ width: '100%' }}>
       <Typography id="input-slider" gutterBottom>
         Temperature
       </Typography>
