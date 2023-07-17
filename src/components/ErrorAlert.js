@@ -1,31 +1,38 @@
 import React from 'react';
-import WarningIcon from '@mui/icons-material/Warning';
-import CloseIcon from '@mui/icons-material/Close';
-import Alert from '@mui/joy/Alert';
-import IconButton from '@mui/joy/IconButton';
-import Typography from '@mui/joy/Typography';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 
 
-export default function ErrorAlert({ error, setError }) {
+const Alert = React.forwardRef(function Alert(
+  props,
+  ref,
+) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
+
+export default function ErrorAlert({ error, setError, inform, setInform }) {
+
+
+
   return (
-    <Snackbar open={error} autoHideDuration={8000} onClose={() => setError(false)}>
-      <Alert
-        startDecorator={<WarningIcon sx={{ mx: 0.5 }} />}
-        variant="solid"
-        color="danger"
-        endDecorator={
-          <>
-            <IconButton variant="solid" size="sm" color="danger" onClick={() => setError(false)}>
-              <CloseIcon />
-            </IconButton>
-          </>
-        }
-      >
-        <Typography sx={{ color: 'white' }} fontWeight="md">
+    <>
+      <Snackbar open={!!error} autoHideDuration={8000} onClose={() => setError(false)} onClick={() => setError(false)}>
+        <Alert
+          severity="error"
+        >
           {error}
-        </Typography>
-      </Alert>
-    </Snackbar>)
+        </Alert>
+      </Snackbar>
+      <Snackbar open={!!inform} autoHideDuration={8000} onClose={() => setInform(false)} onClick={() => setInform(false)}>
+        <Alert
+          severity={(inform && Object.keys(inform)?.[0]) || 'error'}
+        >
+            {inform && Object.values(inform)?.[0]}
+        </Alert>
+      </Snackbar>
+    </>
+  
+  )
 
 }

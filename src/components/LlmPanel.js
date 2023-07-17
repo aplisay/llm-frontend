@@ -30,6 +30,8 @@ export default function LlmPanel() {
   let [temperature, setTemperature] = useState(0.2);
   let [ws, setWs] = useState();
   let [error, setError] = useState();
+  let [tooltip, setTooltip] = useState({});
+  let [inform, setInform] = useState();
 
   useEffect(() => {
     const tryFetch = () => {
@@ -49,10 +51,32 @@ export default function LlmPanel() {
 
   useEffect(() => {
     if (!ws && state === 'active') {
-      setError('Server disconnected, create a new agent to continue');
+      setError('Server disconnected, re-create agent to continue');
       disconnect();
     }
   }, [ws, state]);
+
+  // manange progressive tooltip first time through UI
+  useEffect(() => {
+    if (!tooltip.done) {
+      !agentName && setTooltip({
+        selectAgent: 'Step1: select model'
+      });
+      agentName && !prompt.changed && setTooltip({
+        promptInput: 'Step2: write/customise your prompt'
+      });
+      agentName && prompt.changed && state === 'initial' && setTooltip({
+        agentButton: 'Step3: create agent'
+      });
+      state === 'active' && !transcript.length && setTooltip({
+        phoneNumber: 'Step4: call the number',
+      });
+      state === 'active' && transcript.length && setTooltip({
+        done: true,
+      });
+
+    }
+  }, [agentName, prompt, state, transcript, tooltip]);
 
 
 
@@ -67,11 +91,12 @@ export default function LlmPanel() {
       setState('trying');
       try {
         let res = await createAgent({ agentName, prompt: prompt.value, options: { temperature }, onMessage, onClose: () => setWs(null) });
-        console.log({ res }, 'got agent');
+        setPrompt({ ...prompt, changedSinceCreate: false });
         setWs(res.ws);
         setAgent(res);
         setState('active');
         setTranscript([]);
+        setInform({ success: `Agent created and handling calls to +${res?.number}` });
       }
       catch (err) {
         setState('initial');
@@ -80,6 +105,8 @@ export default function LlmPanel() {
     }
     else if (state === 'active' && agent?.id) {
       await updateAgent({ id: agent.id, prompt: prompt.value, options: { temperature } });
+      setPrompt({ ...prompt, changedSinceCreate: false });
+      setInform({ success: 'Agent updated, will take effect from start of next call' });
     }
   };
 
@@ -103,13 +130,19 @@ export default function LlmPanel() {
           <Item>
             <Typography sx={{ mt: 6, mb: 3 }}>
               LLM Voice playground&nbsp;
-              <PhoneNumber number={agent?.number} tooltip={state === 'active' && !transcript.length  && 'Step4: call the number'} />
+              <PhoneNumber number={agent?.number} tooltip={tooltip.phoneNumber} />
             </Typography>
           </Item>
         </Grid>
         <Grid xs={12} sm={6}>
           <Item>
-            <SelectAgent disabled={state !== 'initial'} options={agents} {...{ agentName, setAgentName }} placeholder="Select model" tooltip={ !agentName && 'Step1: select model'} />
+            <SelectAgent
+              disabled={state !== 'initial'}
+              options={agents}
+              placeholder="Select model"
+              tooltip={tooltip.selectAgent}
+              {...{ agentName, setAgentName }}
+            />
           </Item>
           <Item>
             <TemperatureSlider value={temperature} setValue={setTemperature} />
@@ -117,7 +150,13 @@ export default function LlmPanel() {
         </Grid>
         <Grid xs={6} sm={3}>
           <Item>
-            <AgentButton sx={{ mt: 6, mb: 3 }} disabled={state === 'trying' || !agentName} onClick={buttonClick} state={state} tooltip={agentName && prompt.changed && state === 'initial' && 'Step3: create agent'} />
+            <AgentButton
+              sx={{ mt: 6, mb: 3 }}
+              disabled={state === 'trying' || !agentName
+                || (state === 'active' && !prompt.changedSinceCreate)
+              }
+              onClick={buttonClick} state={state}
+              tooltip={tooltip.agentButton} />
           </Item>
         </Grid>
         <Grid xs={6} sm={3}>
@@ -127,7 +166,7 @@ export default function LlmPanel() {
         </Grid>
         <Grid xs={12} sm={6}>
           <Item>
-            <PromptInput prompt={prompt} setPrompt={setPrompt} agentName={agentName} agents={agents} tooltip={agentName && !prompt.changed && 'Step2: write/customise your prompt'} />
+            <PromptInput prompt={prompt} setPrompt={setPrompt} agentName={agentName} agents={agents} tooltip={tooltip.promptInput} />
           </Item>
         </Grid>
         <Grid xs={12} sm={6}>
@@ -141,7 +180,7 @@ export default function LlmPanel() {
 
 
       </Grid>
-      <ErrorAlert error={error} setError={setError} />
+      <ErrorAlert {...{ error, setError, inform, setInform }} />
 
     </>
   );

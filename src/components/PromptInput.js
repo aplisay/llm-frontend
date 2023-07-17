@@ -12,7 +12,7 @@ export default function PromptInput({ prompt, setPrompt, agentName, agents, tool
   }, [agentName, agents]);
 
   const promptChange = async (evt) => {
-    setPrompt({ value: evt.target.value, changed: true });
+    setPrompt({ value: evt.target.value, changed: true, changedSinceCreate: true });
   };
 
 
