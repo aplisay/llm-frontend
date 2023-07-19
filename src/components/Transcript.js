@@ -70,7 +70,7 @@ const Bubble = ({ type, key, children }) => {
         borderRadius: 10,
       }}
     >
-      <Typography {...{ startDecorator }} level="body2" justifyContent={align} align="left">{children}</Typography>  
+      <Typography {...{ startDecorator }} level="body2" justifyContent={align} align="left">{children}</Typography>
     </Sheet>
 
   </Box>;
@@ -82,18 +82,17 @@ const Bubble = ({ type, key, children }) => {
 export default function Transcript({ transcript, number, tooltip }) {
   const listRef = useRef(null);
 
-  console.log({ transcript, number, tooltip }, 'transcript render')
+  console.log({ transcript, number, tooltip }, 'transcript render');
 
   useEffect(() => {
-   listRef.current?.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    listRef.current?.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, [transcript]);
 
 
 
   return (
     <Sheet variant="outlined" sx={{ p: 4, width: '100%', borderRadius: 5 }} ref={listRef}>
-      <Typography level="h6" align="left"><PhoneNumber number={number} tooltip={tooltip} />
-      </Typography>
+      <PhoneNumber number={number} tooltip={tooltip} />
       {transcript && transcript.map((utter, index) =>
         Object.entries(utter).map(([type, value]) =>
           <Bubble type={type} key={index}>

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import Textarea from '@mui/joy/Textarea';
-import Tooltip from '@mui/joy/Tooltip';
+import Tooltip from './Tooltip';
 
 
 export default function PromptInput({ prompt, setPrompt, agentName, agents, tooltip }) {
@@ -17,7 +17,7 @@ export default function PromptInput({ prompt, setPrompt, agentName, agents, tool
 
 
   return (
-    <Tooltip title={tooltip} arrow placement="right" open={!!tooltip}>
+    <Tooltip {...{ tooltip }} open={!!tooltip}>
       <Textarea placeholder="Enter prompt here" value={prompt.value} name="prompt" onChange={promptChange} />
       </Tooltip>
   );

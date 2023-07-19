@@ -64,16 +64,18 @@ export default function LlmPanel(props) {
   useEffect(() => {
     if (!tooltip.done) {
       !agentName && setTooltip({
-        selectAgent: 'Step1: select model'
+        selectAgent: { step: 1, title: 'select model', text: 'this is the AI provider model that your agent will run'}
       });
       agentName && !prompt.changed && setTooltip({
-        promptInput: 'Step2: write/customise your prompt'
+        promptInput: { step: 2, title: 'write/customise your prompt', text: 'personalise your agent here' }
       });
       agentName && prompt.changed && state === 'initial' && setTooltip({
-        agentButton: 'Step3: create agent'
+        agentButton: {
+          step: 3, title: 'create agent', text: 'set things up to call your agent'
+        }
       });
       state === 'active' && !transcript.length && setTooltip({
-        phoneNumber: 'Step4: call the number',
+        phoneNumber: { step: 4, title: 'call the number', text: 'grab a phone and call this number to test your agent\'s response' }
       });
       state === 'active' && transcript.length && setTooltip({
         done: true,
