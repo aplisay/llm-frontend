@@ -1,4 +1,4 @@
-import { listVoices } from '../lib/agent';
+import { listVoices } from '../api/agent';
 import { useState, useEffect } from 'react';
 import Select from '@mui/joy/Select';
 import Grid from '@mui/joy/Grid';

@@ -15,17 +15,17 @@ const Home = () => (
 
 
 export default function App() {
-  function App() {
+
     const status = useAuth();
+    console.log({ status }, 'app');
     // have to wait for Firebase otherwise logged in users see a flash of logged out view
     if (status === "loading") return null;
     if (status === "loggedOut")
       return (
         <Router>
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/login" element={<Login />} />
           </Routes>
         </Router>
       );
@@ -34,5 +34,5 @@ export default function App() {
         <LlmPanel />
       </Container>
     );
-  };
+
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { styled } from '@mui/joy/styles';
 import { Button, Grid, Sheet, Typography } from '@mui/joy';
-import { createAgent, listAgents, updateAgent, deleteAgent } from '../lib/agent';
+import { createAgent, listAgents, updateAgent, deleteAgent } from '../api/agent';
 import SelectAgent from './SelectAgent';
 import SelectVoice from './SelectVoice';
 import Transcript from './Transcript';
