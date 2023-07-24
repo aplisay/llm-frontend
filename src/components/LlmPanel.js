@@ -1,19 +1,16 @@
 import { useEffect, useState } from 'react';
 import { styled } from '@mui/joy/styles';
-import { Button, Grid, Sheet, Typography } from '@mui/joy';
+import { Button, Grid, Sheet } from '@mui/joy';
 import { createAgent, listAgents, updateAgent, deleteAgent } from '../api/agent';
 import SelectAgent from './SelectAgent';
 import SelectVoice from './SelectVoice';
 import Transcript from './Transcript';
 import TemperatureSlider from './TemperatureSlider';
-import ErrorAlert from './ErrorAlert';
 import PromptInput from './PromptInput';
 import AgentButton from './AgentButton';
-import PhoneNumber from './PhoneNumber';
 
 const Item = styled(Sheet)(({ theme }) => ({
-  backgroundColor:
-    theme.palette.mode === 'dark' ? theme.palette.background.level1 : '#fff',
+  backgroundColor: 'transparent',
   ...theme.typography.body2,
   padding: theme.spacing(1),
   textAlign: 'center',
@@ -21,7 +18,7 @@ const Item = styled(Sheet)(({ theme }) => ({
   color: theme.vars.palette.text.secondary,
 }));
 
-export default function LlmPanel(props) {
+export default function LlmPanel({ error, setError, inform, setInform, ...props }) {
   let [agent, setAgent] = useState({});
   let [agentName, setAgentName] = useState();
   let [state, setState] = useState('initial');
@@ -30,9 +27,7 @@ export default function LlmPanel(props) {
   let [transcript, setTranscript] = useState();
   let [temperature, setTemperature] = useState(0.2);
   let [ws, setWs] = useState();
-  let [error, setError] = useState();
   let [tooltip, setTooltip] = useState({});
-  let [inform, setInform] = useState();
   let [options, setOptions] = useState({});
   let [changed, setChanged] = useState(false);
 
@@ -139,15 +134,7 @@ export default function LlmPanel(props) {
 
   return (
     <>
-
       <Grid container spacing={2} sx={{ flexGrow: 1, width: '100%' }}>
-        <Grid xs={12}>
-          <Item>
-            <Typography sx={{ mt: 6, mb: 3 }}>
-              LLM Voice playground
-            </Typography>
-          </Item>
-        </Grid>
         <Grid xs={12} sm={6}>
           <Item>
             <SelectAgent
@@ -208,7 +195,7 @@ export default function LlmPanel(props) {
         </Grid>
 
       </Grid>
-      <ErrorAlert {...{ error, setError, inform, setInform }} />
+
 
     </>
   );

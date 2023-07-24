@@ -1,229 +1,173 @@
-import * as React from 'react';
-import { CssVarsProvider, useColorScheme } from '@mui/joy/styles';
-import GlobalStyles from '@mui/joy/GlobalStyles';
-import CssBaseline from '@mui/joy/CssBaseline';
+import { useEffect } from 'react';
 import Box from '@mui/joy/Box';
 import Button from '@mui/joy/Button';
-import Checkbox from '@mui/joy/Checkbox';
 import FormControl from '@mui/joy/FormControl';
 import FormLabel, { formLabelClasses } from '@mui/joy/FormLabel';
-import IconButton from '@mui/joy/IconButton';
 import Link from '@mui/joy/Link';
 import Input from '@mui/joy/Input';
 import Typography from '@mui/joy/Typography';
-import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
-import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
-import customTheme from '../theme';
+import Divider from '@mui/joy/Divider';
+import RightImagePage from './RightImagePage';
+
+import signupImage from '../assets/signup.jpg';
+import loginImage from '../assets/loginpage.jpg';
 import GoogleIcon from '@mui/icons-material/Google';
-//import { useLogin } from '../api/user';
+import GitHubIcon from '@mui/icons-material/GitHub';
 
+import { useLogin, useUser, useCreateUser } from '../api/user';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../api/auth';
 
-function ColorSchemeToggle({ onClick, ...props }) {
-  //const [login, { status }] = useLogin();
-  const { mode, setMode } = useColorScheme();
-  const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-  if (!mounted) {
-    return <IconButton size="sm" variant="plain" color="neutral" disabled />;
+const providers = {
+  emailPassword: true,
+  external: {
+    Google: { icon: <GoogleIcon />, handler: 'loginGoogle' },
+    GitHub: { icon: <GitHubIcon />, handler: 'loginGithub' }
   }
-  return (
-    <IconButton
-      id="toggle-mode"
-      size="sm"
-      variant="plain"
-      color="neutral"
-      aria-label="toggle light/dark mode"
-      {...props}
-      onClick={(event) => {
-        if (mode === 'light') {
-          setMode('dark');
-        } else {
-          setMode('light');
-        }
-        onClick?.(event);
-      }}
+};
+
+
+export default function Login({ variant, error, setError, email, setEmail, ...rest }) {
+  let status = useAuth();
+  let navigate = useNavigate();
+  let login = useLogin();
+  let create = useCreateUser();
+
+
+  let [image, signin, signup, verify, passwordReset, formSubmit] = [loginImage, true, false, false, false, login.loginEmail];
+
+  if (status === 'unverified') {
+    ([image, signin, verify, formSubmit] = [signupImage, false, true, create.sendEmail]);
+    if (email === 'notSent') {
+      setEmail('sent');
+      create.sendEmail();
+    }
+    else {
+      setTimeout(() => navigate("/"), 3000);
+    }
+  }
+  else if (variant === 'lostPassword') {
+    ([image, signin, passwordReset, formSubmit] = [signupImage, false, true, login.passwordReset]);
+  }
+  else if (variant === 'signup') {
+    ([image, signin, signup, formSubmit] = [signupImage, false, true, create.createEmail]);
+  }
+
+  const submitHandler = async (event, target) => {
+    console.log({ event, target }, 'submit');
+    event.preventDefault();
+    const data = {
+      email: target?.email?.value,
+      password: target?.password?.value,
+    };
+
+    try {
+      console.log({ data }, 'logging in');
+      await formSubmit(data);
+      console.log({ data }, 'logged in');
+    }
+    catch (err) {
+      let message = err.message.replace(/.*Firebase: /, '');
+      setError(`${variant || 'Login'} failed: ${message}`);
+    }
+
+  };
+
+  const oauthHandler = async (handlerName) => {
+    try {
+      (login[handlerName] && await login[handlerName]());
+    }
+    catch (err) {
+      let message = err.message.replace(/.*Firebase: /, '');
+      setError(`${variant || 'Login'} failed: ${message}`);
+    }
+  };
+  console.log({ image, variant, signup, verify, status}, 'login');
+
+  return (<RightImagePage {...{ image }} component="main"
+    sx={{
+      my: 'auto',
+      py: 2,
+      pb: 5,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 2,
+      width: 400,
+      maxWidth: '100%',
+      mx: 'auto',
+      borderRadius: 'sm',
+      '& form': {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+      },
+      [`& .${formLabelClasses.asterisk}`]: {
+        visibility: 'hidden',
+      },
+    }}>
+    <div>
+      <Typography component="h1" fontSize="xl2" fontWeight="lg">
+        {signin && `Sign in to your account`}
+        {signup && `Create account`}
+        {verify && `Verify your account`}
+        {passwordReset && `Password reset`}
+      </Typography>
+      <Typography level="body2" sx={{ my: 1, mb: 3 }}>
+        {signin && `welcome back`}
+        {signup && `with email address and password`}
+        {verify && `Check your email and click on the link to verify`}
+        {passwordReset && `Send email with password recovery link`}
+      </Typography>
+    </div>
+
+    <form
+      onSubmit={(event) => submitHandler(event, event.currentTarget.elements)}
     >
-      {mode === 'light' ? <DarkModeRoundedIcon /> : <LightModeRoundedIcon />}
-    </IconButton>
-  );
-}
-
-/**
- * This template uses [`Inter`](https://fonts.google.com/specimen/Inter?query=inter) font.
- */
-export default function Login() {
- // const [login, {status}] = useLogin();
-
-
-  return (<>
-       <Box
-        sx={(theme) => ({
-          width:
-            'clamp(100vw - var(--Cover-width), (var(--Collapsed-breakpoint) - 100vw) * 999, 100vw)',
-          transition: 'width var(--Transition-duration)',
-          transitionDelay: 'calc(var(--Transition-duration) + 0.1s)',
-          position: 'relative',
-          zIndex: 1,
+      {!verify && <FormControl required>
+        <FormLabel>Email</FormLabel>
+        <Input type="email" name="email" />
+      </FormControl>}
+      {!verify && !passwordReset && <FormControl required>
+        <FormLabel>Password</FormLabel>
+        <Input type="password" name="password" />
+      </FormControl>}
+      {!signup && !verify && !passwordReset && <Box
+        sx={{
           display: 'flex',
-          justifyContent: 'flex-end',
-          backdropFilter: 'blur(4px)',
-          backgroundColor: 'rgba(255 255 255 / 0.6)',
-          [theme.getColorSchemeSelector('dark')]: {
-            backgroundColor: 'rgba(19 19 24 / 0.4)',
-          },
-        })}
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
       >
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            minHeight: '100dvh',
-            width:
-              'clamp(var(--Form-maxWidth), (var(--Collapsed-breakpoint) - 100vw) * 999, 100%)',
-            maxWidth: '100%',
-            px: 2,
-          }}
-        >
-          <Box
-            component="header"
-            sx={{
-              py: 3,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <Typography
-              fontWeight="lg"
-              startDecorator={
-                <Box
-                  component="span"
-                  sx={{
-                    width: 24,
-                    height: 24,
-                    background: (theme) =>
-                      `linear-gradient(45deg, ${theme.vars.palette.primary.solidBg}, ${theme.vars.palette.primary.solidBg} 30%, ${theme.vars.palette.primary.softBg})`,
-                    borderRadius: '50%',
-                    boxShadow: (theme) => theme.shadow.md,
-                    '--joy-shadowChannel': (theme) =>
-                      theme.vars.palette.primary.mainChannel,
-                  }}
-                />
-              }
-            >
-              Logo
-            </Typography>
-            <ColorSchemeToggle />
-          </Box>
-          <Box
-            component="main"
-            sx={{
-              my: 'auto',
-              py: 2,
-              pb: 5,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 2,
-              width: 400,
-              maxWidth: '100%',
-              mx: 'auto',
-              borderRadius: 'sm',
-              '& form': {
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 2,
-              },
-              [`& .${formLabelClasses.asterisk}`]: {
-                visibility: 'hidden',
-              },
-            }}
-          >
-            <div>
-              <Typography component="h1" fontSize="xl2" fontWeight="lg">
-                Sign in to your account
-              </Typography>
-              <Typography level="body2" sx={{ my: 1, mb: 3 }}>
-                Welcome back
-              </Typography>
-            </div>
-            <form
-              onSubmit={(event) => {
-                event.preventDefault();
-                const formElements = event.currentTarget.elements;
-                const data = {
-                  email: formElements.email.value,
-                  password: formElements.password.value,
-                  persistent: formElements.persistent.checked,
-                };
-                alert(JSON.stringify(data, null, 2));
-              }}
-            >
-              <FormControl required>
-                <FormLabel>Email</FormLabel>
-                <Input type="email" name="email" />
-              </FormControl>
-              <FormControl required>
-                <FormLabel>Password</FormLabel>
-                <Input type="password" name="password" />
-              </FormControl>
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <Checkbox size="sm" label="Remember for 30 days" name="persistent" />
-                <Link fontSize="sm" href="#replace-with-a-link" fontWeight="lg">
-                  Forgot your password?
-                </Link>
-              </Box>
-              <Button type="submit" fullWidth>
-                Sign in
-              </Button>
-            </form>
-            <Button
-              variant="outlined"
-              color="neutral"
-              fullWidth
-              startDecorator={<GoogleIcon />}
-            >
-              Sign in with Google
-            </Button>
-          </Box>
-          <Box component="footer" sx={{ py: 3 }}>
-            <Typography level="body3" textAlign="center">
-              © Your company {new Date().getFullYear()}
-            </Typography>
-          </Box>
-        </Box>
+        <Link fontSize="sm" href="/signup" fontWeight="lg">
+          Create Account
+        </Link>
+        <Link fontSize="sm" href="/password-reset" fontWeight="lg">
+          Forgot your password?
+        </Link>
       </Box>
-      <Box
-        sx={(theme) => ({
-          height: '100%',
-          position: 'fixed',
-          right: 0,
-          top: 0,
-          bottom: 0,
-          left: 'clamp(0px, (100vw - var(--Collapsed-breakpoint)) * 999, 100vw - var(--Cover-width))',
-          transition:
-            'background-image var(--Transition-duration), left var(--Transition-duration) !important',
-          transitionDelay: 'calc(var(--Transition-duration) + 0.1s)',
-          backgroundColor: 'background.level1',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundImage:
-            'url(../assets/loginpage.jpg)',
-          [theme.getColorSchemeSelector('dark')]: {
-            backgroundImage:
-              'url(../assets/loginpage.jpg)',
-          },
-        })}
-    />
-  </>
-  );
-}
+      }
+      <Button type="submit" fullWidth>
+        {signin && `Login`}
+        {signup && `Create account`}
+        {verify && `Resend email`}
+        {passwordReset && `Send password reset`}
+      </Button>
+    </form>
+    {!verify && !passwordReset &&
+      <>
+        <Divider>or</Divider>
+        {Object.entries(providers.external).map(([name, provider]) =>
+        (<Button
+          key={name}
+          variant="outlined"
+          color="neutral"
+          fullWidth
+          startDecorator={provider.icon}
+          onClick={() => oauthHandler(provider.handler)} >
+          Login in with {name}
+        </Button>))}
+      </>}
 
+  </RightImagePage>);
+
+}

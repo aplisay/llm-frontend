@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import * as firebase from "firebase/auth";
 import { gapi, loadAuth2 } from "gapi-script";
 
 const scopes = [
@@ -11,6 +11,8 @@ let googleAuth = loadAuth2(
   scopes.join(" ")
 );
 
+var githubProvider = new firebase.GithubAuthProvider();
+
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_TOKEN,
   authDomain: "llm-voice.firebaseapp.com",
@@ -18,12 +20,12 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const auth = firebase.getAuth(app);
 console.log({ app, auth }, 'firebase');
-const googleProvider = new GoogleAuthProvider();
+const googleProvider = new firebase.GoogleAuthProvider();
 // add Google Sheets permissions
 scopes.forEach((scope) => googleProvider.addScope(scope));
 
-export { googleProvider, googleAuth };
+export { auth, googleProvider, googleAuth, githubProvider };
 
-export default { auth };
+export default firebase;

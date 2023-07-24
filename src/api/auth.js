@@ -1,5 +1,5 @@
 import React from "react";
-import firebase from "../lib/firebase";
+import firebase, {auth} from "../lib/firebase";
 
 const AuthContext = React.createContext();
 
@@ -8,8 +8,10 @@ function AuthProvider(props) {
   React.useEffect(() => {
     // onAuthStateChanged is called when Firebase's logged in state changes
     // if we have a user then we know we're logged in, otherwise we're not
-    const unsubscribe = firebase.auth.onAuthStateChanged((user) => {
-      setStatus(user ? "loggedIn" : "loggedOut");
+    const unsubscribe = firebase.onAuthStateChanged(auth, (user) => {
+      console.log({ user }, 'stateChange');
+      let s = user ? "unverified" : "loggedOut";
+      setStatus(user?.emailVerified ? "loggedIn" : s);
     });
     // onAuthStateChanged returns an unsub function for cleaning up the effect
     return unsubscribe;
