@@ -154,10 +154,10 @@ export default function Login({ variant, error, setError, status, ...rest }) {
           alignItems: 'center',
         }}
       >
-        <Link fontSize="sm" href="/signup" fontWeight="lg">
+        <Link fontSize="sm" href="/#/signup" fontWeight="lg">
           Create Account
         </Link>
-        <Link fontSize="sm" href="/password-reset" fontWeight="lg">
+        <Link fontSize="sm" href="/#/password-reset" fontWeight="lg">
           Forgot your password?
         </Link>
       </Box>
