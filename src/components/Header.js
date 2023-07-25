@@ -8,11 +8,12 @@ import ColourSchemeToggle from './ColourSchemeToggle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AspectRatio from '@mui/joy/AspectRatio';
 import { useUser } from '../api/user';
+import { Link } from '@mui/joy';
 
 
 export default function Header(props) {
   let { email, logout } = useUser() || {};
-  let path = useLocation()
+  let path = useLocation();
   console.log({ path }, 'header');
   return (
     <Sheet
@@ -39,21 +40,25 @@ export default function Header(props) {
           },
         })}
       />
-      <Typography
-        sx={{ mr: 'auto' }}
-        fontWeight="lg"
-        startDecorator={<Box sx={{ mt: 1, mr: 5 }}><img src="/logo.png" height={35} alt="Aplisay logo" /></Box>}
-      >
-        {path?.pathname !== '/landing' && `LLM Voice Playground`}
-      </Typography>
-      {email && <Typography 
-        sx={{mr:5}}
-        startDecorator={<LogoutIcon onClick={logout} />}
-        fontWeight="sm"
+        <Typography
+          sx={{ mr: 'auto' }}
+          fontWeight="lg"
+          startDecorator={<Box sx={{ mt: 1, mr: 5 }}>
+            <Link href='/#/'>
+              <img src="/logo.png" height={35} alt="Aplisay logo" />
+            </Link>
+          </Box>}
         >
-        {email}
-      </Typography>}
-      <ColourSchemeToggle/>
+          {path?.pathname !== '/landing' && `LLM Voice Playground`}
+        </Typography>
+        {email && <Typography
+          sx={{ mr: 5 }}
+          startDecorator={<LogoutIcon onClick={logout} />}
+          fontWeight="sm"
+        >
+          {email}
+        </Typography>}
+        <ColourSchemeToggle />
     </Sheet>
   );
 }
