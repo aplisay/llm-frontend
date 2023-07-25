@@ -35,6 +35,10 @@ function logOut() {
   return firebase.signOut(auth);
 }
 
+function reload() {
+  auth.currentUser.reload();
+}
+
 function sendVerificationEmail() {
   console.log({ firebase, auth, user: auth.currentUser }, 'sendVerificationEmail')
   return firebase.sendEmailVerification(auth.currentUser);
@@ -56,8 +60,7 @@ function getUser() {
 
 function useUser() {
   // we don't store these things in the DB, so have to grab from FB
-  const { displayName, email, emailVerified, photoUrl } = (auth.currentUser || {});
-  return auth.currentUser && { displayName, email, emailVerified, photoUrl, logout: logOut };
+  return { ...auth.currentUser, logout: () => logOut(), reload: () => reload() };
 }
 
 

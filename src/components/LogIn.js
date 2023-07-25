@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Box from '@mui/joy/Box';
 import Button from '@mui/joy/Button';
 import FormControl from '@mui/joy/FormControl';
@@ -27,31 +27,47 @@ const providers = {
 };
 
 
-export default function Login({ variant, error, setError, email, setEmail, ...rest }) {
-  let status = useAuth();
-  let navigate = useNavigate();
+export default function Login({ variant, error, setError, status, ...rest }) {
+  let user = useUser();
   let login = useLogin();
   let create = useCreateUser();
+  let [email, setEmail] = useState('notSent');
 
 
   let [image, signin, signup, verify, passwordReset, formSubmit] = [loginImage, true, false, false, false, login.loginEmail];
 
-  if (status === 'unverified') {
-    ([image, signin, verify, formSubmit] = [signupImage, false, true, create.sendEmail]);
-    if (email === 'notSent') {
-      setEmail('sent');
-      create.sendEmail();
+    async function pollEmail() {
+      if (!user?.auth?.currentUser?.emailVerified) {
+        setTimeout(pollEmail, 5000);
+        await (user && user?.reload && user.reload());
+        console.log({ user, status }, 'reload');
+      }
     }
-    else {
-      setTimeout(() => navigate("/"), 3000);
+
+    if (status === 'unverified') {
+      ([image, signin, verify, formSubmit] = [signupImage, false, true, create.sendEmail]);
+      if (email === 'notSent') {
+        setEmail('sent');
+        try {
+          create.sendEmail();
+        }
+        catch (e) {
+          console.log({ e }, 'sending email');
+        }
+      }
+      else if (email === 'sent')
+      {
+        setEmail('polling');
+        pollEmail();
+      }
     }
-  }
-  else if (variant === 'lostPassword') {
-    ([image, signin, passwordReset, formSubmit] = [signupImage, false, true, login.passwordReset]);
-  }
-  else if (variant === 'signup') {
-    ([image, signin, signup, formSubmit] = [signupImage, false, true, create.createEmail]);
-  }
+    else if (variant === 'lostPassword') {
+      ([image, signin, passwordReset, formSubmit] = [signupImage, false, true, login.passwordReset]);
+    }
+    else if (variant === 'signup') {
+      ([image, signin, signup, formSubmit] = [signupImage, false, true, create.createEmail]);
+    }
+
 
   const submitHandler = async (event, target) => {
     console.log({ event, target }, 'submit');

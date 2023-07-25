@@ -8,7 +8,7 @@ function AuthProvider(props) {
   React.useEffect(() => {
     // onAuthStateChanged is called when Firebase's logged in state changes
     // if we have a user then we know we're logged in, otherwise we're not
-    const unsubscribe = firebase.onAuthStateChanged(auth, (user) => {
+    const unsubscribe = firebase.onIdTokenChanged(auth, (user) => {
       console.log({ user }, 'stateChange');
       let s = user ? "unverified" : "loggedOut";
       setStatus(user?.emailVerified ? "loggedIn" : s);
