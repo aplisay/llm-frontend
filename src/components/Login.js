@@ -147,19 +147,22 @@ export default function Login({ variant, error, setError, status, ...rest }) {
         <FormLabel>Password</FormLabel>
         <Input type="password" name="password" />
       </FormControl>}
-      {!signup && !verify && !passwordReset && <Box
+      {!verify && !passwordReset && <Box
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
         }}
       >
-        <Link fontSize="sm" href="/#/signup" fontWeight="lg">
+        {!signup && <Link fontSize="sm" href="/#/signup" fontWeight="lg">
           Create Account
-        </Link>
-        <Link fontSize="sm" href="/#/password-reset" fontWeight="lg">
+        </Link>}
+        {!signup && <Link fontSize="sm" href="/#/password-reset" fontWeight="lg">
           Forgot your password?
-        </Link>
+        </Link>}
+        {signup && <Link fontSize="sm" href="/#/login" fontWeight="lg">
+          Log in to existing account
+        </Link>}
       </Box>
       }
       <Button type="submit" fullWidth>

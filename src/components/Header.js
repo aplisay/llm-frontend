@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useLocation } from 'react-router-dom';
 import Box from '@mui/joy/Box';
 import GlobalStyles from '@mui/joy/GlobalStyles';
 import Sheet from '@mui/joy/Sheet';
@@ -8,8 +9,10 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { useUser } from '../api/user';
 
 
-export default function Header() {
+export default function Header(props) {
   let { email, logout } = useUser() || {};
+  let path = useLocation()
+  console.log({ path }, 'header');
   return (
     <Sheet
       sx={{
@@ -23,7 +26,7 @@ export default function Header() {
         py: 1,
         px: 2,
         gap: 1,
-        backgroundColor: 'transparent',
+        //backgroundColor: 'transparent',
         //boxShadow: 'sm',
       }}
     >
@@ -39,7 +42,7 @@ export default function Header() {
         fontWeight="lg"
         startDecorator={<Box sx={{ mt: 2, mr:5 }}><img src="/logo.png" alt="logo"/></Box>}
       >
-        LLM Playground
+        {path?.pathname !== '/landing' && `LLM Voice Playground`}
       </Typography>
       {email && <Typography 
         sx={{mr:5}}
