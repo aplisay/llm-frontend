@@ -67,7 +67,7 @@ export default function App() {
         }
         {status === 'loggedIn' &&
           <Container sx={{ mt: 'var(--Header-height)'}}>
-            <Home {...messages} />
+            <Home {...messages} status={status} />
           </Container>
         }
         <ErrorAlert {...messages} />

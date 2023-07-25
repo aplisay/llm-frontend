@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { styled } from '@mui/joy/styles';
 import { Button, Grid, Sheet } from '@mui/joy';
 import { createAgent, listAgents, updateAgent, deleteAgent } from '../api/agent';
@@ -18,7 +18,15 @@ const Item = styled(Sheet)(({ theme }) => ({
   color: theme.vars.palette.text.secondary,
 }));
 
-export default function LlmPanel({ error, setError, inform, setInform, ...props }) {
+function useComponentWillUnmount(cleanupCallback = () => { }) {
+  const callbackRef = useRef(cleanupCallback);
+  callbackRef.current = cleanupCallback; // always up to date
+  useEffect(() => {
+    return () => callbackRef.current();
+  }, []);
+}
+
+export default function LlmPanel({ error, setError, inform, setInform, status, ...props }) {
   let [agent, setAgent] = useState({});
   let [agentName, setAgentName] = useState();
   let [state, setState] = useState('initial');
@@ -46,6 +54,16 @@ export default function LlmPanel({ error, setError, inform, setInform, ...props 
     };
     tryFetch();
   }, []);
+
+  useEffect(() => {
+    if (status != 'loggedIn') {
+      disconnect();
+    }
+    return () => {
+      console.log({ state, ws }, 'unmounting, calling disconnect');
+      disconnect();
+    };
+  }, [status]);
 
 
   useEffect(() => {
@@ -130,6 +148,8 @@ export default function LlmPanel({ error, setError, inform, setInform, ...props 
       setState('initial');
     }
   };
+
+  useComponentWillUnmount(() => disconnect());
 
 
   return (
