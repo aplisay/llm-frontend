@@ -1,5 +1,25 @@
 import * as React from 'react';
 import Box from '@mui/joy/Box';
+import JoyTypography from '@mui/joy/Typography';
+import ListItem from '@mui/joy/ListItem';
+
+
+export function Typography({ level, ...rest }) {
+  let props = {};
+  level === 'title' && Object.assign(props, { color: "primary", fontSize: "lg", fontWeight: "lg" });
+  level === 'body' && Object.assign(props, { level: "body2" });
+  level === 'heading' && Object.assign(props, { fontSize: "lg", textColor: "text.secondary", lineHeight: "lg" });
+
+  return <JoyTypography {...rest} {...props} />;
+}
+
+export function ListItemText({ children, ...rest }) {
+  return <ListItem>
+    <Typography level="body">
+      {children}
+    </Typography>
+  </ListItem>;
+}
 
 export default function RightImagePage({ image, children, ...rest }) {
 
@@ -11,6 +31,7 @@ export default function RightImagePage({ image, children, ...rest }) {
         transition: 'width var(--Transition-duration)',
         transitionDelay: 'calc(var(--Transition-duration) + 0.1s)',
         position: 'relative',
+        top: 'var(--Header-height)',
         zIndex: 1,
         display: 'flex',
         justifyContent: 'flex-end',
@@ -33,9 +54,9 @@ export default function RightImagePage({ image, children, ...rest }) {
         }}
       >
         <Box {...rest}>
-       {children}
+          {children}
         </Box>
-     
+
       </Box>
     </Box>
     <Box

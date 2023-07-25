@@ -16,6 +16,7 @@ import Login from './components/Login';
 import LlmPanel from './components/LlmPanel.js';
 import Header from './components/Header';
 import HeroPage from './components/HeroPage';
+import Privacy from './components/Privacy';
 import ErrorAlert from './components/ErrorAlert';
 
 const materialTheme = materialExtendTheme();
@@ -65,6 +66,7 @@ export default function App() {
               <Route path="/login" element={<Login {...messages}  {...{ email, setEmail, status }} />} />
               <Route path="/signup" element={<Login variant="signup" {...messages} {...{ email, setEmail, status }} />} />
               <Route path="/password-reset" element={<Login variant="lostPassword" {...messages} {...{ email, setEmail, status }} />} />
+              <Route path="/privacy" element={<Privacy {...messages} {...{ email, setEmail, status }} />} />
               <Route path='/' element={<Navigate to="/landing" />}/>
             </Routes>
           </Router>

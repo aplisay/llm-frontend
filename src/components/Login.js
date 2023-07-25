@@ -163,6 +163,9 @@ export default function Login({ variant, error, setError, status, ...rest }) {
         {signup && <Link fontSize="sm" href="/#/login" fontWeight="lg">
           Log in to existing account
         </Link>}
+        {signup && <Link fontSize="sm" href="/#/privacy" fontWeight="lg">
+          Privacy policy
+        </Link>}
       </Box>
       }
       <Button type="submit" fullWidth>
