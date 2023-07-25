@@ -6,6 +6,7 @@ import Sheet from '@mui/joy/Sheet';
 import Typography from '@mui/joy/Typography';
 import ColourSchemeToggle from './ColourSchemeToggle';
 import LogoutIcon from '@mui/icons-material/Logout';
+import AspectRatio from '@mui/joy/AspectRatio';
 import { useUser } from '../api/user';
 
 
@@ -26,21 +27,22 @@ export default function Header(props) {
         py: 1,
         px: 2,
         gap: 1,
-        //backgroundColor: 'transparent',
-        //boxShadow: 'sm',
+        backgroundColor: path?.pathname !== '/' && 'transparent',
+        boxShadow: path?.pathname === '/' && 'sm',
       }}
     >
       <GlobalStyles
         styles={(theme) => ({
           ':root': {
             '--Header-height': '52px',
+            '--Logo-height': '35px',
           },
         })}
       />
       <Typography
-        sx={{ mt: 2, mr: 'auto' }}
+        sx={{ mr: 'auto' }}
         fontWeight="lg"
-        startDecorator={<Box sx={{ mt: 2, mr:5 }}><img src="/logo.png" alt="logo"/></Box>}
+        startDecorator={<Box sx={{ mt: 1, mr: 5 }}><img src="/logo.png" height={35} alt="Aplisay logo" /></Box>}
       >
         {path?.pathname !== '/landing' && `LLM Voice Playground`}
       </Typography>
