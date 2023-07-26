@@ -1,6 +1,6 @@
 
 import useAxios, { configure } from 'axios-hooks';
-import firebase from "./firebase";
+import {auth} from "./firebase";
 import Axios from 'axios';
 import LRU from 'lru-cache';
 
@@ -10,16 +10,16 @@ if (!process.env.REACT_APP_BACKEND_SERVER) {
   );
 }
 
-let firebaseAuth = null;
-const token = firebase.auth?.currentUser?.getIdToken().then(token => (firebaseAuth = token));
 
 
 const api = Axios.create({
   baseURL: `${process.env.REACT_APP_BACKEND_SERVER}/api`,
   method: "get"
 });
-api.interceptors.request.use(function (config) {
-  if (config.auth && firebaseAuth) {
+
+api.interceptors.request.use(async function (config) {
+  let token = await auth?.currentUser?.getIdToken();
+  if (token) {
     config.headers.authorization = `Bearer ${token}`;
   }
   return config;
@@ -30,11 +30,3 @@ configure({ api, cache })
 
 export default useAxios;
 export { useAxios, api };
-
-class HttpError extends Error {
-  constructor(response) {
-    const message = response.status + " " + response.statusText;
-    super(message);
-    this.status = response.status;
-  }
-}
