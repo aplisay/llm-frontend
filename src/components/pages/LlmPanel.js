@@ -37,7 +37,7 @@ const defaultOptions = {
     language: 'en-GB'
   }
 
-}
+};
 
 export default function LlmPanel({ error, setError, inform, setInform, status, ...props }) {
   let [agent, setAgent] = useState({});
@@ -88,10 +88,10 @@ export default function LlmPanel({ error, setError, inform, setInform, status, .
 
   // manange progressive tooltip first time through UI
   useEffect(() => {
-    console.log({ agentName, prompt, state, transcript, options }, 'tooltip useffect')
+    console.log({ agentName, prompt, state, transcript, options }, 'tooltip useffect');
     if (!tooltip.done) {
       !agentName && setTooltip({
-        selectAgent: { step: 1, title: 'Select model', text: 'This is the AI provider model that your agent will run'}
+        selectAgent: { step: 1, title: 'Select model', text: 'This is the AI provider model that your agent will run' }
       });
       agentName && !prompt.changed && setTooltip({
         promptInput: { step: 2, title: 'Write your prompt', text: 'Personalise your agent here, the pre-filled text is a test prompt with a structure that we know works. Build your own following the structure or try something completely different!' }
@@ -126,7 +126,7 @@ export default function LlmPanel({ error, setError, inform, setInform, status, .
     if (state === 'initial' && !agent?.id) {
       setState('trying');
       try {
-        let res = await createAgent({ agentName, prompt: prompt.value, options: {...options,  temperature }, onMessage, onClose: () => setWs(null) });
+        let res = await createAgent({ agentName, prompt: prompt.value, options: { ...options, temperature }, onMessage, onClose: () => setWs(null) });
         setPrompt({ ...prompt });
         setChanged(false);
         setWs(res.ws);
@@ -142,7 +142,7 @@ export default function LlmPanel({ error, setError, inform, setInform, status, .
     }
     else if (state === 'active' && agent?.id) {
       await updateAgent({ id: agent.id, prompt: prompt.value, options: { ...options, temperature } });
-      setChanged(false); 
+      setChanged(false);
       setInform({ success: 'Agent updated, will take effect from start of next call' });
     }
   };
@@ -153,7 +153,7 @@ export default function LlmPanel({ error, setError, inform, setInform, status, .
       await updateAgent({ id: agent.id, options: { ...newOptions, temperature } });
     }
 
-  }
+  };
 
   const disconnect = async () => {
     console.log({ state, agent }, 'got disconnect');
@@ -209,7 +209,7 @@ export default function LlmPanel({ error, setError, inform, setInform, status, .
               options={options}
               setOptions={changeOptions}
               tooltip={tooltip.selectVoice}
-          />
+            />
           </Grid>
         </Grid>
         <Grid xs={12} sm={6}>
