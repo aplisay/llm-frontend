@@ -88,7 +88,6 @@ export default function LlmPanel({ error, setError, inform, setInform, status, .
 
   // manange progressive tooltip first time through UI
   useEffect(() => {
-    console.log({ agentName, prompt, state, transcript, options }, 'tooltip useffect');
     if (!tooltip.done) {
       !agentName && setTooltip({
         selectAgent: { step: 1, title: 'Select model', text: 'This is the AI provider model that your agent will run' }
@@ -123,9 +122,10 @@ export default function LlmPanel({ error, setError, inform, setInform, status, .
   };
 
   const buttonClick = async () => {
-    if (state === 'initial' && !agent?.id) {
-      setState('trying');
-      try {
+    try {
+      if (state === 'initial' && !agent?.id) {
+        setState('trying');
+
         let res = await createAgent({ agentName, prompt: prompt.value, options: { ...options, temperature }, onMessage, onClose: () => setWs(null) });
         setPrompt({ ...prompt });
         setChanged(false);
@@ -134,16 +134,17 @@ export default function LlmPanel({ error, setError, inform, setInform, status, .
         setState('active');
         setTranscript([]);
         setInform({ success: `Agent created and handling calls to +${res?.number}` });
+
       }
-      catch (err) {
-        setState('initial');
-        setError(`Couldn't create agent: ${err.message}`);
+      else if (state === 'active' && agent?.id) {
+        await updateAgent({ id: agent.id, prompt: prompt.value, options: { ...options, temperature } });
+        setChanged(false);
+        setInform({ success: 'Agent updated, will take effect from start of next call' });
       }
     }
-    else if (state === 'active' && agent?.id) {
-      await updateAgent({ id: agent.id, prompt: prompt.value, options: { ...options, temperature } });
-      setChanged(false);
-      setInform({ success: 'Agent updated, will take effect from start of next call' });
+    catch (err) {
+      setState('initial');
+      setError(`Couldn't ${state === 'initial' ? 'create' : 'update'} agent: ${err?.response?.data?.message || err.message}`);
     }
   };
 
