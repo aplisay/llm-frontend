@@ -5,6 +5,7 @@ import Grid from '@mui/joy/Grid';
 import Option from '@mui/joy/Option';
 import { Language } from '@mui/icons-material';
 import { RecordVoiceOver } from '@mui/icons-material';
+import Tooltip from '../common/Tooltip';
 
 
 export default function SelectVoice({ options, setOptions, tooltip, ...rest }) {
@@ -18,8 +19,8 @@ export default function SelectVoice({ options, setOptions, tooltip, ...rest }) {
   useEffect(() => {
     !voices && listVoices().then(v => {
       setVoices(v);
-      setLanguage('en-GB');
-      setVoice('en-GB-Wavenet-A');
+      setLanguage(options?.tts?.language || 'en-GB');
+      setVoice(options?.tts?.voice || 'en-GB-Wavenet-A');
     });
   }, []);
 
@@ -37,6 +38,7 @@ export default function SelectVoice({ options, setOptions, tooltip, ...rest }) {
   }, [language, voice]);
 
   return (
+    <Tooltip {...{ tooltip }} open={!!tooltip}>
       <Grid container sx={{width: '100%'}}>
         <Grid xs={12} sm={4}>
         <Select
@@ -61,6 +63,7 @@ export default function SelectVoice({ options, setOptions, tooltip, ...rest }) {
           </Select>
         </Grid>
       </Grid>
+      </Tooltip>
   );
 
 }

@@ -26,6 +26,19 @@ function useComponentWillUnmount(cleanupCallback = () => { }) {
   }, []);
 }
 
+const defaultOptions = {
+  tts: {
+    provider: 'google',
+    language: 'en-GB',
+    voice: 'en-GB-Wavenet-A'
+  },
+  stt: {
+    provider: 'google',
+    language: 'en-GB'
+  }
+
+}
+
 export default function LlmPanel({ error, setError, inform, setInform, status, ...props }) {
   let [agent, setAgent] = useState({});
   let [agentName, setAgentName] = useState();
@@ -36,7 +49,7 @@ export default function LlmPanel({ error, setError, inform, setInform, status, .
   let [temperature, setTemperature] = useState(0.2);
   let [ws, setWs] = useState();
   let [tooltip, setTooltip] = useState({});
-  let [options, setOptions] = useState({});
+  let [options, setOptions] = useState(defaultOptions);
   let [changed, setChanged] = useState(false);
 
 
@@ -75,6 +88,7 @@ export default function LlmPanel({ error, setError, inform, setInform, status, .
 
   // manange progressive tooltip first time through UI
   useEffect(() => {
+    console.log({ agentName, prompt, state, transcript, options }, 'tooltip useffect')
     if (!tooltip.done) {
       !agentName && setTooltip({
         selectAgent: { step: 1, title: 'Select model', text: 'This is the AI provider model that your agent will run'}
@@ -90,12 +104,15 @@ export default function LlmPanel({ error, setError, inform, setInform, status, .
       state === 'active' && !transcript.length && setTooltip({
         phoneNumber: { step: 4, title: 'Call the number', text: 'Grab a phone and call this number to test your agent\'s response' }
       });
-      state === 'active' && transcript.length && setTooltip({
+      state === 'active' && transcript.length && options.tts.voice === defaultOptions.tts.voice && setTooltip({
+        selectVoice: { step: 5, title: 'Change voices', text: 'Customise the voice your agent uses' }
+      });
+      state === 'active' && transcript.length && options.tts.voice !== defaultOptions.tts.voice && setTooltip({
         done: true,
       });
 
     }
-  }, [agentName, prompt, state, transcript]);
+  }, [agentName, prompt, state, transcript, options]);
 
 
 
@@ -191,6 +208,7 @@ export default function LlmPanel({ error, setError, inform, setInform, status, .
             <SelectVoice
               options={options}
               setOptions={changeOptions}
+              tooltip={tooltip.selectVoice}
           />
           </Grid>
         </Grid>
