@@ -1,6 +1,6 @@
 import * as React from 'react';
-import image from '../assets/privacy.jpg';
-import RightImagePage, { Typography, ListItemText } from './RightImagePage';
+import image from '../../assets/privacy.jpg';
+import RightImagePage, { Typography, ListItemText } from '../layouts/RightImagePage';
 import Link from '@mui/joy/Link';
 import { List } from '@mui/joy';
 

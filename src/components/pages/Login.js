@@ -7,16 +7,16 @@ import Link from '@mui/joy/Link';
 import Input from '@mui/joy/Input';
 import Typography from '@mui/joy/Typography';
 import Divider from '@mui/joy/Divider';
-import RightImagePage from './RightImagePage';
+import RightImagePage from '../layouts/RightImagePage';
 
-import signupImage from '../assets/signup.jpg';
-import loginImage from '../assets/loginpage.jpg';
+import signupImage from '../../assets/signup.jpg';
+import loginImage from '../../assets/loginpage.jpg';
 import GoogleIcon from '@mui/icons-material/Google';
 import GitHubIcon from '@mui/icons-material/GitHub';
 
-import { useLogin, useUser, useCreateUser } from '../api/user';
+import { useLogin, useUser, useCreateUser } from '../../api/user';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../api/auth';
+import { useAuth } from '../../api/auth';
 
 const providers = {
   emailPassword: true,

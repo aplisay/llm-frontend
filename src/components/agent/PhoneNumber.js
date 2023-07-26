@@ -1,7 +1,7 @@
 import React from 'react';
 import Typography from '@mui/joy/Typography';
 import { Call } from '@mui/icons-material';
-import Tooltip from './Tooltip';
+import Tooltip from '../common/Tooltip';
 
 
 export default function PhoneNumber({ tooltip, number }) {

@@ -7,7 +7,7 @@ import Typography from '@mui/joy/Typography';
 import ColourSchemeToggle from './ColourSchemeToggle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AspectRatio from '@mui/joy/AspectRatio';
-import { useUser } from '../api/user';
+import { useUser } from '../../api/user';
 import { Link } from '@mui/joy';
 
 

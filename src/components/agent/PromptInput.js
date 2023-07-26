@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import Textarea from '@mui/joy/Textarea';
-import Tooltip from './Tooltip';
+import Tooltip from '../common/Tooltip';
 
 
 export default function PromptInput({ prompt, setPrompt, agentName, agents, tooltip }) {

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Box from '@mui/joy/Box';
-import image from '../assets/rob-commcon.jpg';
-import TwoSidedLayout from './TwoSidedLayout';
+import image from '../../assets/rob-commcon.jpg';
+import TwoSidedLayout from '../layouts/TwoSidedLayout';
 import Typography from '@mui/joy/Typography';
 import Button from '@mui/joy/Button';
 import { ArrowForward } from '@mui/icons-material';

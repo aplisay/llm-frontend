@@ -12,12 +12,12 @@ import GlobalStyles from '@mui/joy/GlobalStyles';
 import CssBaseline from '@mui/joy/CssBaseline';
 import customTheme from './theme';
 import Container from '@mui/material/Container';
-import Login from './components/Login';
-import LlmPanel from './components/LlmPanel.js';
-import Header from './components/Header';
-import HeroPage from './components/HeroPage';
-import Privacy from './components/Privacy';
-import ErrorAlert from './components/ErrorAlert';
+import Login from './components/pages/Login';
+import LlmPanel from './components/pages/LlmPanel.js';
+import Header from './components/common/Header';
+import HeroPage from './components/pages/HeroPage';
+import Privacy from './components/pages/Privacy';
+import ErrorAlert from './components/common/ErrorAlert';
 
 const materialTheme = materialExtendTheme();
 

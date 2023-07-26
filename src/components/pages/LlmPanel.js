@@ -1,13 +1,13 @@
 import { useEffect, useState, useRef } from 'react';
 import { styled } from '@mui/joy/styles';
 import { Button, Grid, Sheet } from '@mui/joy';
-import { createAgent, listAgents, updateAgent, deleteAgent } from '../api/agent';
-import SelectAgent from './SelectAgent';
-import SelectVoice from './SelectVoice';
-import Transcript from './Transcript';
-import TemperatureSlider from './TemperatureSlider';
-import PromptInput from './PromptInput';
-import AgentButton from './AgentButton';
+import { createAgent, listAgents, updateAgent, deleteAgent } from '../../api/agent';
+import SelectAgent from '../agent/SelectAgent';
+import SelectVoice from '../agent/SelectVoice';
+import Transcript from '../agent/Transcript';
+import TemperatureSlider from '../agent/TemperatureSlider';
+import PromptInput from '../agent/PromptInput';
+import AgentButton from '../agent/AgentButton';
 
 const Item = styled(Sheet)(({ theme }) => ({
   backgroundColor: 'transparent',
@@ -77,18 +77,14 @@ export default function LlmPanel({ error, setError, inform, setInform, status, .
   useEffect(() => {
     if (!tooltip.done) {
       !agentName && setTooltip({
-        selectAgent: { step: 1, title: 'select model', text: 'this is the AI provider model that your agent will run'}
       });
       agentName && !prompt.changed && setTooltip({
-        promptInput: { step: 2, title: 'write/customise your prompt', text: 'personalise your agent here' }
       });
       agentName && prompt.changed && state === 'initial' && setTooltip({
         agentButton: {
-          step: 3, title: 'create agent', text: 'set things up to call your agent'
         }
       });
       state === 'active' && !transcript.length && setTooltip({
-        phoneNumber: { step: 4, title: 'call the number', text: 'grab a phone and call this number to test your agent\'s response' }
       });
       state === 'active' && transcript.length && setTooltip({
         done: true,

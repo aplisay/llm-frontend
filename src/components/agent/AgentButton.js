@@ -1,6 +1,6 @@
 import React from 'react';
 import Button from '@mui/joy/Button';
-import Tooltip from './Tooltip';
+import Tooltip from '../common/Tooltip';
 import CircularProgress from '@mui/joy/CircularProgress';
 
 

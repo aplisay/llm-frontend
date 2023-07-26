@@ -1,7 +1,7 @@
 import React from 'react';
 import Select from '@mui/joy/Select';
 import Option from '@mui/joy/Option';
-import Tooltip from './Tooltip';
+import Tooltip from '../common/Tooltip';
 
 
 export default function SelectAgent({ options, agentName, setAgentName, tooltip, ...rest }) {
